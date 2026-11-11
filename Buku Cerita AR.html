@@ -1,157 +1,255 @@
-<!DOCTYPE html>
-<html lang="ms"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Buku Cerita AR</title>
-<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600&family=Fraunces:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
-<style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#f6ecd5;--card:#fffaf0;--ink:#5b4636;--soft:#8a7560;--sage:#9db88a;--rose:#e59a93;--sky:#a9cde0;--gold:#d9a441;--line:#c9b48f;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#262a3f;--card:#33384f;--ink:#f3e8cf;--soft:#c3b8a0;--sage:#6f8d63;--rose:#b87571;--sky:#5f86a0;--gold:#e6b85c;--line:#6b6f8c;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#262a3f;--card:#33384f;--ink:#f3e8cf;--soft:#c3b8a0;--sage:#6f8d63;--rose:#b87571;--sky:#5f86a0;--gold:#e6b85c;--line:#6b6f8c;color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Mali','Comic Sans MS',cursive,sans-serif;line-height:1.55;
-background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--sky) 45%,transparent),transparent 38%),radial-gradient(circle at 92% 20%,color-mix(in srgb,var(--rose) 35%,transparent),transparent 34%),radial-gradient(circle at 70% 95%,color-mix(in srgb,var(--sage) 40%,transparent),transparent 40%);background-attachment:fixed}
-h1,h2{font-family:'Fraunces',Georgia,serif;margin:0}
-.wrap{max-width:880px;margin:0 auto;padding:20px 16px 60px}
-.hero{text-align:center;padding:28px 12px 10px}
-.hero h1{font-size:clamp(30px,7vw,48px);color:var(--ink)}
-.hero p{margin:6px auto 0;max-width:520px;color:var(--soft)}
-.orn{font-size:26px;letter-spacing:8px}
-.paper{background:var(--card);border:2.5px solid var(--line);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:3px 5px 0 color-mix(in srgb,var(--line) 55%,transparent);padding:22px 24px;margin:18px 0}
-.btn{font:inherit;font-weight:600;color:#4a3626;background:var(--gold);border:2.5px solid #8a6a3a;border-radius:30px 12px 28px 12px/12px 28px 12px 30px;padding:10px 20px;cursor:pointer;box-shadow:2px 3px 0 #8a6a3a}
-.btn:active{transform:translate(2px,3px);box-shadow:none}
-.btn.g{background:var(--sage)}.btn.r{background:var(--rose)}.btn.s{background:var(--sky)}
-.btn.sm{padding:5px 12px;font-size:14px}
-.center{text-align:center}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-.card{background:var(--card);border:2.5px solid var(--line);border-radius:22px 8px 20px 8px;padding:12px;box-shadow:3px 4px 0 color-mix(in srgb,var(--line) 55%,transparent)}
-.card:nth-child(2n){transform:rotate(.6deg)}.card:nth-child(2n+1){transform:rotate(-.5deg)}
-.card video{width:100%;border-radius:12px;background:#0003;aspect-ratio:16/9;object-fit:cover;border:2px dashed var(--line)}
-.card h3{margin:8px 0 4px;font-size:17px}
-.qr{display:flex;gap:10px;align-items:center;margin:8px 0}
-.qr div{background:#fff;padding:6px;border-radius:10px;border:2px solid var(--line);line-height:0}
-.qr small{color:var(--soft)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-label{display:block;font-weight:600;margin:10px 0 4px}
-input[type=text],input[type=file],select{width:100%;font:inherit;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
-input[type=range]{width:100%;accent-color:var(--gold)}
-.note{color:var(--soft);font-size:14px}
-#msg{min-height:22px;font-weight:600}
-#ar{position:fixed;inset:0;background:#000;z-index:50;overflow:hidden}
-#cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#ov{position:absolute;left:0;top:0;width:100px;height:100px;transform-origin:0 0;object-fit:fill;visibility:hidden;transition:transform .09s linear;pointer-events:none}
-#ov.fb{visibility:visible;left:50%;top:50%;width:min(90vw,640px);height:auto;transform:translate(-50%,-50%)!important}
-.hint{position:absolute;left:12px;right:12px;bottom:calc(24px + env(safe-area-inset-bottom,0px));text-align:center;color:#fff;background:#5b4636d9;border-radius:18px;padding:10px 14px;font-weight:600}
-.x,.snd{position:absolute;top:calc(14px + env(safe-area-inset-top,0px))}
-.x{left:14px}.snd{right:14px}
-.table{overflow-x:auto}
-</style></head>
-<body>
-<div class="wrap">
-<div class="hero"><div class="orn">🌿 ✨ 📖 ✨ 🌿</div><h1>Buku Cerita AR</h1>
-<p>Imbas kod QR pada gambar, dan lihatlah lukisan itu hidup menjadi video!</p></div>
-<div id="app"></div>
-</div>
-<script type="application/json" id="data">[]</script>
-<script>
-const $=s=>document.querySelector(s),app=$('#app');
-const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let items=[];try{items=JSON.parse($('#data').textContent)}catch(e){}
-let assets=null,art=null;
-const hashId=()=>(location.hash.match(/^#m-([a-z0-9]+)$/)||[])[1];
-const baseUrl=()=>($('#base')&&$('#base').value.trim())||location.href.split('#')[0];
 
-function source(){const c=document.documentElement.cloneNode(true);c.querySelector('#app').innerHTML='';
-c.querySelector('#data').textContent=JSON.stringify(items).replace(/</g,'\\u003c');return '<!DOCTYPE html>\n'+c.outerHTML}
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Cerita Ajaib AR</title>
+    
+    <!-- Tailwind CSS untuk Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts untuk tema buku cerita -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- A-Frame & MindAR untuk fungsi AR (Image Tracking) -->
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
-function render(){
- const id=hashId(),it=id&&items.find(i=>i.id===id);
- let h='';
- if(id)h+=`<div class="paper center"><h2>${it?'📖 '+esc(it.title):'Cerita tidak ditemui'}</h2><p>${it?'Tekan butang, benarkan kamera, kemudian halakan pada gambar yang ada kod QR.':'Video ini mungkin telah dipadam.'}</p>${it?'<button class="btn g" id="go1">✨ Mula Pengalaman AR</button>':''}</div>`;
- h+=`<div class="paper center"><h2>🔍 Imbas Gambar</h2><p class="note">Buka kamera dan halakan pada mana-mana kod QR cerita.</p><button class="btn s" id="go2">📷 Buka Kamera</button></div>`;
- h+=`<div class="paper"><h2>🎞️ Pustaka Video</h2><p class="note">Setiap video ada kod QR sendiri. Cetak atau letakkan QR itu di dalam gambar anda.</p>`;
- h+=`<label>Pautan laman (dimasukkan dalam QR)</label><input type="text" id="base" value="${esc(location.href.split('#')[0])}"><p class="note">Jika QR tidak membuka laman ini, tampalkan pautan sebenar laman ini di sini.</p></div>`;
- h+=items.length?`<div class="grid">${items.map(i=>`<div class="card"><video src="${esc(i.url)}#t=0.5" preload="metadata" muted playsinline controls></video><h3>${esc(i.title)}</h3><div class="qr"><div data-qr="${i.id}"></div><small>Kod QR<br>Klik kanan / tekan lama untuk simpan</small></div><div class="row"><button class="btn sm g" data-play="${i.id}">▶ AR</button><button class="btn sm s" data-copy="${i.id}">🔗 Pautan</button>${assets&&art?`<button class="btn sm r" data-del="${i.id}">🗑 Padam</button>`:''}</div></div>`).join('')}</div>`:`<div class="paper center note">Belum ada video. 🌱</div>`;
- if(assets&&art)h+=`<div class="paper"><h2>🖌️ Tambah Video Baharu</h2>
-<label>Tajuk cerita</label><input type="text" id="ti" placeholder="cth: Kancil dan Buaya">
-<label>Fail video (MP4, maksimum 20 MB)</label><input type="file" id="fi" accept="video/*">
-<label>Letak QR dalam gambar</label><select id="ps"><option value="0,0">Di tengah gambar</option><option value="1,1" selected>Sudut kanan bawah</option><option value="-1,1">Sudut kiri bawah</option><option value="1,-1">Sudut kanan atas</option><option value="-1,-1">Sudut kiri atas</option></select>
-<label>Saiz gambar berbanding QR: <span id="sv">4</span>×</label><input type="range" id="sc" min="2" max="10" step=".5" value="4">
-<p class="note">Video akan dibentangkan menutupi gambar, berpaut pada kedudukan QR.</p>
-<div class="center"><button class="btn" id="sv1">💾 Simpan Video</button></div><p id="msg" class="center"></p></div>`;
- else h+=`<p class="note center">Hanya penyunting laman boleh menambah video.</p>`;
- app.innerHTML=h;drawQR();
-}
-function drawQR(){document.querySelectorAll('[data-qr]').forEach(d=>{d.innerHTML='';new QRCode(d,{text:baseUrl()+'#m-'+d.dataset.qr,width:120,height:120,correctLevel:QRCode.CorrectLevel.M})})}
+    <style>
+        /* TEMA: Tekstur kertas & bentuk organik (Watercolour/Gouache feel) */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #Fdfbf7;
+            /* Corak tekstur kertas yang sangat halus */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            color: #5C4B51;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-app.addEventListener('input',e=>{if(e.target.id==='base')drawQR();if(e.target.id==='sc')$('#sv').textContent=e.target.value});
-app.addEventListener('click',async e=>{
- const t=e.target.closest('button');if(!t)return;
- if(t.id==='go1')startAR(hashId());
- if(t.id==='go2')startAR(null);
- if(t.dataset.play)startAR(t.dataset.play);
- if(t.dataset.copy){const u=baseUrl()+'#m-'+t.dataset.copy;try{await navigator.clipboard.writeText(u);t.textContent='✔ Disalin'}catch(x){prompt('Salin pautan:',u)}}
- if(t.dataset.del&&confirm('Padam video ini?')){const i=items.find(v=>v.id===t.dataset.del);items=items.filter(v=>v!==i);
-  try{if(i.aid)await assets.delete(i.aid)}catch(x){}try{await art.publish(source())}catch(x){alert('Gagal menyimpan: '+(x.message||x.code))}}
- if(t.id==='sv1'){
-  const f=$('#fi').files[0],ti=$('#ti').value.trim(),m=$('#msg');
-  if(!ti||!f){m.textContent='Sila isi tajuk dan pilih video. 🌼';return}
-  if(f.size>20*1048576){m.textContent='Video melebihi 20 MB. Sila mampatkan dahulu.';return}
-  try{m.textContent='Memuat naik… ☁️';t.disabled=true;
-   const r=await assets.upload(f),[px,py]=$('#ps').value.split(',').map(Number);
-   items.push({id:'a'+Date.now().toString(36),title:ti,url:r.url,aid:r.id,scale:+$('#sc').value,px,py});
-   m.textContent='Menyimpan…';await art.publish(source())
-  }catch(x){items.pop();t.disabled=false;m.textContent='Gagal: '+(x.message||x.code||'ralat')}
- }
-});
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive;
+            color: #F08A5D;
+            text-shadow: 2px 2px 0px #F9E0D9;
+        }
 
-function homog(s,d){const A=[];for(let i=0;i<4;i++){const[x,y]=s[i],[u,v]=d[i];
- A.push([x,y,1,0,0,0,-x*u,-y*u,u],[0,0,0,x,y,1,-x*v,-y*v,v])}
- for(let c=0;c<8;c++){let p=c;for(let r=c+1;r<8;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];
-  for(let r=0;r<8;r++)if(r!==c){const f=A[r][c]/A[c][c];for(let k=c;k<9;k++)A[r][k]-=f*A[c][k]}}
- return A.map((r,i)=>r[8]/r[i])}
-const proj=(h,[x,y])=>{const w=h[6]*x+h[7]*y+1;return[(h[0]*x+h[1]*y+h[2])/w,(h[3]*x+h[4]*y+h[5])/w]};
+        /* Butang berbentuk blob organik seperti tompokan cat air */
+        .btn-blob {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(240, 138, 93, 0.4);
+        }
+        
+        .btn-blob:hover {
+            border-radius: 50% 50% 30% 70% / 60% 40% 70% 30%;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(240, 138, 93, 0.5);
+        }
 
-async function startAR(id){
- const ar=document.createElement('div');ar.id='ar';
- ar.innerHTML='<video id="cam" playsinline muted></video><video id="ov" playsinline loop muted></video><div class="hint" id="hint">Membuka kamera… 📷</div><button class="btn sm r x" id="cl">✕ Tutup</button><button class="btn sm snd" id="sn">🔇</button>';
- document.body.appendChild(ar);
- const cam=ar.querySelector('#cam'),ov=ar.querySelector('#ov'),hint=ar.querySelector('#hint');
- let cur=id?items.find(i=>i.id===id):null,stream,gone=0;
- const close=()=>{stream&&stream.getTracks().forEach(t=>t.stop());ar.remove()};
- ar.querySelector('#cl').onclick=close;
- ar.querySelector('#sn').onclick=e=>{ov.muted=!ov.muted;e.target.textContent=ov.muted?'🔇':'🔊'};
- const setCur=i=>{cur=i;ov.src=i.url;ov.play().catch(()=>{})};
- if(cur)setCur(cur);
- try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});cam.srcObject=stream;await cam.play()}
- catch(e){hint.textContent='Kamera tidak dapat dibuka. Buka laman ini terus dalam pelayar telefon dan benarkan kamera. Pratonton video dipaparkan di sini.';
-  if(cur)ov.classList.add('fb');return}
- hint.textContent=id?'Halakan kamera pada gambar yang ada kod QR 🖼️':'Halakan kamera pada kod QR cerita 🖼️';
- const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});let last=0;
- (function tick(t){
-  if(!ar.isConnected)return;requestAnimationFrame(tick);
-  if(t-last<90||cam.readyState<2)return;last=t;
-  const vw=cam.videoWidth,vh=cam.videoHeight,k=Math.min(1,640/vw);cv.width=vw*k;cv.height=vh*k;
-  cx.drawImage(cam,0,0,cv.width,cv.height);const d=cx.getImageData(0,0,cv.width,cv.height);
-  const r=jsQR(d.data,d.width,d.height,{inversionAttempts:'dontInvert'});
-  const m=r&&r.data.match(/#m-([a-z0-9]+)$/),it=m&&items.find(i=>i.id===m[1]);
-  if(!it||(id&&it.id!==id)){if(++gone>8)ov.style.visibility='hidden';return}
-  gone=0;if(it!==cur)setCur(it);
-  const W=innerWidth,H=innerHeight,s=Math.max(W/vw,H/vh),ox=(W-vw*s)/2,oy=(H-vh*s)/2,L=r.location;
-  const q=[L.topLeftCorner,L.topRightCorner,L.bottomRightCorner,L.bottomLeftCorner].map(p=>[p.x/k*s+ox,p.y/k*s+oy]);
-  const H1=homog([[0,0],[1,0],[1,1],[0,1]],q),a=(ov.videoWidth/ov.videoHeight)||1.78,w=cur.scale,h=w/a;
-  const cxq=.5-cur.px*(w/2-.5),cyq=.5-cur.py*(h/2-.5);
-  const P=[[cxq-w/2,cyq-h/2],[cxq+w/2,cyq-h/2],[cxq+w/2,cyq+h/2],[cxq-w/2,cyq+h/2]].map(p=>proj(H1,p));
-  const g=homog([[0,0],[100,0],[100,100],[0,100]],P);
-  ov.style.transform=`matrix3d(${g[0]},${g[3]},0,${g[6]},${g[1]},${g[4]},0,${g[7]},0,0,1,0,${g[2]},${g[5]},0,1)`;
-  ov.style.visibility='visible';hint.style.display='none';
- })(0);
-}
+        .btn-pink { background-color: #F9A8D4; color: white; }
+        .btn-mint { background-color: #99F6E4; color: #0F766E; box-shadow: 0 10px 20px -5px rgba(153, 246, 228, 0.6);}
+        .btn-yellow { background-color: #FDE047; color: #854D0E; }
 
-render();
-(async()=>{try{if(window.claude&&claude.use){[assets,art]=await Promise.all([claude.use('assets'),claude.use('artifact')]);if(!$('#ar')&&!($('#ti')&&$('#ti').value))render()}}catch(e){}})();
-addEventListener('hashchange',()=>{if(!$('#ar'))render()});
-</script>
-</body></html>
+        /* Kad galeri dengan gaya cat air lembut */
+        .watercolor-card {
+            background: white;
+            border-radius: 20px 50px 30px 40px / 40px 30px 50px 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            border: 3px solid #FDF4F6;
+        }
+
+        /* Menyembunyikan elemen UI lalai MindAR yang tidak cantik */
+        .mindar-ui-overlay { display: none !important; }
+        
+        #ar-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50;
+            background: black;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative">
+
+    <!-- ================= SKRIN UTAMA (LANDING PAGE) ================= -->
+    <div id="home-screen" class="min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
+        
+        <!-- Hiasan Bentuk Abstrak di Belakang -->
+        <div class="absolute top-10 left-10 w-32 h-32 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div class="absolute bottom-10 right-10 w-40 h-40 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 w-48 h-48 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-70" style="transform: translate(-50%, -50%);"></div>
+
+        <div class="relative z-20 text-center max-w-lg mx-auto bg-white/60 backdrop-blur-sm p-8 rounded-[3rem] shadow-xl border-4 border-white">
+            <!-- Ikon Buku (SVG) -->
+            <svg class="w-24 h-24 mx-auto mb-4 text-[#F08A5D]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M21 4H7a2 2 0 00-2 2v12a2 2 0 002 2h14a1 1 0 001-1V5a1 1 0 00-1-1zm-1 13H7a1 1 0 010-2h13v2zm0-4H7a1 1 0 010-2h13v2zm0-4H7V6h13v3z" />
+                <path d="M3 6a1 1 0 00-1 1v12a3 3 0 003 3h16v-2H5a1 1 0 01-1-1V7a1 1 0 00-1-1z" />
+            </svg>
+
+            <h1 class="text-4xl md:text-5xl mb-4 leading-tight">Cerita Ajaib<br>Dalam Gambar</h1>
+            <p class="text-lg mb-8 text-gray-600 font-semibold">Lihat lukisan hidup menjadi video dengan keajaiban AR, atau tonton semua koleksi video di sini!</p>
+            
+            <div class="flex flex-col gap-4 w-full">
+                <!-- Butang Buka AR -->
+                <button onclick="startAR()" class="btn-blob btn-pink text-xl py-4 px-8 font-bold flex items-center justify-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Imbas Gambar (AR)
+                </button>
+                
+                <!-- Butang Buka Galeri -->
+                <button onclick="showGallery()" class="btn-blob btn-mint text-xl py-4 px-8 font-bold flex items-center justify-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Lihat Galeri Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SKRIN GALERI VIDEO ================= -->
+    <div id="gallery-screen" class="hidden min-h-screen p-6 md:p-12 relative z-10">
+        <!-- Butang Kembali -->
+        <button onclick="goHome()" class="mb-8 btn-blob btn-yellow py-2 px-6 font-bold inline-flex items-center gap-2 shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali
+        </button>
+
+        <h2 class="text-4xl text-center mb-10 text-[#5C4B51]">Koleksi Cerita Kami</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            
+            <!-- Item Galeri 1 -->
+            <div class="watercolor-card p-4 flex flex-col items-center">
+                <div class="w-full aspect-video bg-gray-200 rounded-2xl overflow-hidden mb-4 border-2 border-dashed border-pink-200">
+                    <!-- TUKAR LINK VIDEO GALERI 1 DI SINI -->
+                    <video controls class="w-full h-full object-cover" poster="https://placehold.co/600x400/F9A8D4/ffffff?text=Video+Cerita+1">
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <h3 class="text-xl mb-2 text-[#0F766E]">Sang Kancil & Buaya</h3>
+                <p class="text-center text-sm text-gray-500 font-medium pb-2">Kisah klasik kebijaksanaan di rimba.</p>
+            </div>
+
+            <!-- Item Galeri 2 -->
+            <div class="watercolor-card p-4 flex flex-col items-center">
+                <div class="w-full aspect-video bg-gray-200 rounded-2xl overflow-hidden mb-4 border-2 border-dashed border-teal-200">
+                    <!-- TUKAR LINK VIDEO GALERI 2 DI SINI -->
+                    <video controls class="w-full h-full object-cover" poster="https://placehold.co/600x400/99F6E4/0F766E?text=Video+Cerita+2">
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <h3 class="text-xl mb-2 text-[#0F766E]">Bawang Putih Bawang Merah</h3>
+                <p class="text-center text-sm text-gray-500 font-medium pb-2">Cerita ketabahan dan kebaikan hati.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= SKRIN KAMERA AR ================= -->
+    <div id="ar-screen" class="hidden">
+        <div id="ar-container">
+            <!-- Butang Tutup Kamera AR -->
+            <button onclick="stopAR()" class="absolute top-6 right-6 z-[100] bg-white text-red-500 rounded-full w-12 h-12 flex items-center justify-center shadow-lg border-2 border-red-200 font-bold text-xl">X</button>
+            
+            <!-- Mesej Bantuan / Arahan -->
+            <div id="ar-instruction" class="absolute top-6 left-6 right-24 z-[100] bg-white/90 backdrop-blur rounded-2xl p-3 shadow-lg border-2 border-pink-200 pointer-events-none">
+                <p class="text-[#5C4B51] font-bold text-sm text-center">✨ Halakan kamera pada gambar (Artwork) untuk melihat keajaiban! ✨</p>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- SILA TUKAR LINK "targets.mind" DI BAWAH KEPADA LINK GITHUB ANDA SENDIRI -->
+            <!-- ========================================================================= -->
+            <a-scene 
+                mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.2/examples/image-tracking/assets/card-example/targets.mind; autoStart: false;" 
+                color-space="sRGB" 
+                renderer="colorManagement: true, physicallyCorrectLights" 
+                vr-mode-ui="enabled: false" 
+                device-orientation-permission-ui="enabled: false">
+                
+                <a-assets>
+                    <!-- ========================================================================= -->
+                    <!-- SILA TUKAR LINK VIDEO ".mp4" DI BAWAH KEPADA LINK VIDEO GITHUB ANDA -->
+                    <!-- ========================================================================= -->
+                    <video id="ar-video-1" src="https://www.w3schools.com/html/mov_bbb.mp4" loop crossorigin="anonymous" playsinline></video>
+                </a-assets>
+
+                <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+                <!-- TARGET GAMBAR 1 -->
+                <a-entity mindar-image-target="targetIndex: 0" id="target-1">
+                    <a-video src="#ar-video-1" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-video>
+                </a-entity>
+
+            </a-scene>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        const homeScreen = document.getElementById('home-screen');
+        const galleryScreen = document.getElementById('gallery-screen');
+        const arScreen = document.getElementById('ar-screen');
+        let arSystem = null;
+
+        function showGallery() {
+            homeScreen.classList.add('hidden');
+            arScreen.classList.add('hidden');
+            galleryScreen.classList.remove('hidden');
+        }
+
+        function goHome() {
+            galleryScreen.classList.add('hidden');
+            arScreen.classList.add('hidden');
+            homeScreen.classList.remove('hidden');
+        }
+
+        function startAR() {
+            homeScreen.classList.add('hidden');
+            galleryScreen.classList.add('hidden');
+            arScreen.classList.remove('hidden');
+            
+            const sceneEl = document.querySelector('a-scene');
+            arSystem = sceneEl.systems["mindar-image-system"];
+            if(arSystem) {
+                arSystem.start();
+            }
+        }
+
+        function stopAR() {
+            if (arSystem) {
+                arSystem.stop();
+            }
+            const video = document.querySelector('#ar-video-1');
+            if(video) video.pause();
+            goHome();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const target = document.querySelector('#target-1');
+            const video = document.querySelector('#ar-video-1');
+
+            if(target && video) {
+                target.addEventListener("targetFound", event => {
+                    console.log("Gambar Dikesan! Memainkan video...");
+                    document.getElementById('ar-instruction').innerHTML = "<p class='text-[#0F766E] font-bold text-sm text-center'>✨ Gambar dijumpai! Menonton cerita... ✨</p>";
+                    document.getElementById('ar-instruction').classList.replace('border-pink-200', 'border-teal-300');
+                    document.getElementById('ar-instruction').classList.add('bg-teal-50');
+                    
+                    video.play().catch(e => {
+                        console.log("Auto-play disekat oleh pelayar. Pengguna perlu berinteraksi.");
+                    });
+                });
+
+                target.addEventListener("targetLost", event => {
+                    console.log("Gambar Hilang. Berhenti video.");
+                    document.getElementById('ar-instruction').innerHTML = "<p class='text-[#5C4B51] font-bold text-sm text-center'>✨ Halakan kamera pada gambar (Artwork) untuk melihat keajaiban! ✨</p>";
+                    document.getElementById('ar-instruction').classList.replace('border-teal-300', 'border-pink-200');
+                    document.getElementById('ar-instruction').classList.remove('bg-teal-50');
+                    video.pause();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
